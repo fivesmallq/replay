@@ -34,19 +34,31 @@ subprojects {
     }
   }
 
+  configurations {
+    libProd
+    libTest
+    compile.extendsFrom(libProd)
+    testCompile.extendsFrom(libTest)
+  }
+
   task libsProd(type: Sync) {
-    from configurations.compile
+    from configurations.libProd
     into "${rootDir}/build/lib"
     preserve {include '*'}
   }
 
   task libsTest(type: Sync) {
-    from configurations.testRuntime
+    from configurations.libTest
     into "${rootDir}/build/lib-test"
     preserve {include '*'}
   }
 
   compileJava.dependsOn libsProd, libsTest
+
+  clean.doFirst {
+    new File("${rootDir}/build/lib").deleteDir()
+    new File("${rootDir}/build/lib-test").deleteDir()
+  }
 
   test {
     include 'play/**/*'
