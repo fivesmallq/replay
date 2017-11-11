@@ -1,10 +1,10 @@
 configurations {
-  thirdParty
-  compile.extendsFrom thirdParty
+  flyingSaucerCore
+  yahpInternal
 }
 
 ext {
-  FLYING_SOURCER_VERSION = '9.1.9'
+  FLYING_SAUCER_VERSION = '9.1.9'
   YAHP_VERSION = 1.3
 }
 
@@ -12,15 +12,17 @@ dependencies {
   compile project(':framework')
   testCompile project(':framework').sourceSets.test.compileClasspath
 
-  thirdParty("org.xhtmlrenderer:flying-saucer-core:$FLYING_SOURCER_VERSION")
-  libProd("org.xhtmlrenderer:flying-saucer-pdf:$FLYING_SOURCER_VERSION") {
+  flyingSaucerCore("org.xhtmlrenderer:flying-saucer-core:$FLYING_SAUCER_VERSION")
+  libProd("org.xhtmlrenderer:flying-saucer-pdf:$FLYING_SAUCER_VERSION") {
     exclude group: 'org.xhtmlrenderer', module: 'flying-saucer-core'
   }
 
   libProd('org.allcolor:shaniparser:1.4.22')
   libProd('org.allcolor:shaniparser-xmlapi:1.4.22')
   libProd("com.google.code.maven-play-plugin.org.allcolor.yahp:yahp:$YAHP_VERSION") {transitive = false}
-  thirdParty("com.google.code.maven-play-plugin.org.allcolor.yahp:yahp-internal:$YAHP_VERSION") {transitive = false}
+  yahpInternal("com.google.code.maven-play-plugin.org.allcolor.yahp:yahp-internal:$YAHP_VERSION") {transitive = false}
+
+  libProd fileTree(dir: "build/hacked-jars", include: '*.jar')
 }
 
 repositories {
@@ -29,19 +31,39 @@ repositories {
   }
 }
 
-task extractThirdPartyJars(type: Sync) {
-  dependsOn configurations.thirdParty
+task extractFlyingSaucerCoreJar(type: Sync) {
+  dependsOn configurations.flyingSaucerCore
 
-  from {
-    configurations.thirdParty.collect { zipTree(it) }
-  }
-  into "$buildDir/thirdParty/"
+  from {configurations.flyingSaucerCore.collect { zipTree(it) }}
+  into "$buildDir/flying-saucer-core/"
   exclude 'org/xhtmlrenderer/swing/NaiveUserAgent*'
+}
+
+task extractYahpInternalJar(type: Sync) {
+  dependsOn configurations.yahpInternal
+
+  from {configurations.yahpInternal.collect { zipTree(it) }}
+  into "$buildDir/yahp-internal/"
   exclude 'org/allcolor/yahp/cl/converter/CHtmlToPdfFlyingSaucerTransformer*'
 }
 
-jar.dependsOn extractThirdPartyJars
+task flyingSaucerCoreHackedJar(type: Jar, dependsOn: extractFlyingSaucerCoreJar) {
+  from "$buildDir/flying-saucer-core/"
+  baseName = 'flying-saucer-core-hacked'
+  destinationDir = file('build/hacked-jars')
+  version = "$FLYING_SAUCER_VERSION"
+}
 
-jar {
-  from sourceSets.main.output + "$buildDir/thirdParty/"
+task yahpInternalHackedJar(type: Jar, dependsOn: extractYahpInternalJar) {
+  from "$buildDir/yahp-internal/"
+  baseName = 'yahp-internal-hacked'
+  destinationDir = file('build/hacked-jars')
+  version = "$YAHP_VERSION"
+}
+
+compileJava.dependsOn 'flyingSaucerCoreHackedJar', 'yahpInternalHackedJar'
+
+artifacts {
+  archives file: file("build/hacked-jars/flying-saucer-core-hacked-${FLYING_SAUCER_VERSION}.jar"), classifier: 'flying-saucer-core-hacked', builtBy: flyingSaucerCoreHackedJar
+  archives file: file("build/hacked-jars/yahp-internal-hacked-${YAHP_VERSION}.jar"), classifier: 'yahp-internal-hacked', builtBy: yahpInternalHackedJar
 }

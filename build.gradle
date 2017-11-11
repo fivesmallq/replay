@@ -53,7 +53,7 @@ subprojects {
     preserve {include '*'}
   }
 
-  compileJava.dependsOn libsProd, libsTest
+  compileJava.finalizedBy libsProd, libsTest
 
   clean.doFirst {
     new File("${rootDir}/build/lib").deleteDir()
