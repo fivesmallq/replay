@@ -1,0 +1,23 @@
+configurations {
+  yahpInternal
+}
+
+dependencies {
+  yahpInternal("com.google.code.maven-play-plugin.org.allcolor.yahp:yahp-internal:$YAHP_VERSION") {transitive = false}
+}
+
+task extractYahpInternalJar(type: Sync) {
+  dependsOn configurations.yahpInternal
+
+  from {configurations.yahpInternal.collect { zipTree(it) }}
+  into "$buildDir/classes"
+  exclude 'org/allcolor/yahp/cl/converter/CHtmlToPdfFlyingSaucerTransformer*'
+}
+
+jar.dependsOn extractYahpInternalJar
+
+jar {
+  from "$buildDir/classes"
+}
+
+uploadArchives.dependsOn jar

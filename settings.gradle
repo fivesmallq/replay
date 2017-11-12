@@ -1,1 +1,1 @@
-include 'framework', 'rebel', 'guice', 'liquibase', 'fastergt', 'pdf', 'excel'
+include 'framework', 'rebel', 'guice', 'liquibase', 'fastergt', 'yahp-internal-hacked', 'flying-saucer-core-hacked', 'pdf', 'excel'

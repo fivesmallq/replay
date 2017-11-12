@@ -1,0 +1,29 @@
+configurations {
+  flyingSaucerCore
+}
+
+dependencies {
+  flyingSaucerCore("org.xhtmlrenderer:flying-saucer-core:$FLYING_SAUCER_VERSION")
+}
+
+repositories {
+  maven {
+    url uri('https://dl.bintray.com/allcolor/alc-web')
+  }
+}
+
+task extractFlyingSaucerCoreJar(type: Sync) {
+  dependsOn configurations.flyingSaucerCore
+
+  from {configurations.flyingSaucerCore.collect { zipTree(it) }}
+  into "$buildDir/classes"
+  exclude 'org/xhtmlrenderer/swing/NaiveUserAgent*'
+}
+
+jar.dependsOn extractFlyingSaucerCoreJar
+
+jar {
+  from "$buildDir/classes"
+}
+
+uploadArchives.dependsOn jar

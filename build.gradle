@@ -2,6 +2,8 @@ defaultTasks 'clean', 'test', 'jar', 'uploadArchives'
 
 ext {
   REPO = project.properties['repo'] ?: "${rootDir}/repo"
+  FLYING_SAUCER_VERSION = '9.1.9'
+  YAHP_VERSION = 1.3
 }
 
 subprojects {
@@ -88,6 +90,17 @@ subprojects {
     repositories {
       mavenDeployer {
         repository(url: "file://${REPO}")
+
+        pom.withXml {XmlProvider xmlProvider ->
+          def dependenciesNodes = (NodeList) xmlProvider.asNode().get('dependencies')
+          def dependenciesNode = dependenciesNodes.size() > 0 ? dependenciesNodes.get(0) : xmlProvider.asNode().appendNode('dependencies')
+          configurations.libProd.allDependencies.each {
+            def dependencyNode = dependenciesNode.appendNode('dependency')
+            dependencyNode.appendNode('groupId', it.group)
+            dependencyNode.appendNode('artifactId', it.name)
+            dependencyNode.appendNode('version', it.version)
+          }
+        }
       }
     }
   }

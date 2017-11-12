@@ -20,12 +20,14 @@
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/excel/build" />
       <excludeFolder url="file://$MODULE_DIR$/fastergt/build" />
+      <excludeFolder url="file://$MODULE_DIR$/flying-saucer-core-hacked/build" />
       <excludeFolder url="file://$MODULE_DIR$/framework/build" />
       <excludeFolder url="file://$MODULE_DIR$/guice/build" />
       <excludeFolder url="file://$MODULE_DIR$/liquibase/build" />
       <excludeFolder url="file://$MODULE_DIR$/pdf/build" />
       <excludeFolder url="file://$MODULE_DIR$/rebel/build" />
       <excludeFolder url="file://$MODULE_DIR$/repo" />
+      <excludeFolder url="file://$MODULE_DIR$/yahp-internal-hacked/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
