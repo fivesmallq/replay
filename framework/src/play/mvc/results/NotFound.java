@@ -1,6 +1,7 @@
 package play.mvc.results;
 
 import play.Play;
+import play.exceptions.TemplateNotFoundException;
 import play.exceptions.UnexpectedException;
 import play.libs.MimeTypes;
 import play.mvc.Http;
@@ -49,7 +50,8 @@ public class NotFound extends Result {
         String errorHtml = "Not found";
         try {
             errorHtml = TemplateLoader.load("errors/404." + (format == null ? "html" : format)).render(binding);
-        } catch(Exception e) {
+        } catch(TemplateNotFoundException e) {
+            // no template in desired format, just display the default response
         }
         try {
             response.out.write(errorHtml.getBytes(getEncoding()));

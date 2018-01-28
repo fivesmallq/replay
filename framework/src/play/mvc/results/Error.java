@@ -1,6 +1,7 @@
 package play.mvc.results;
 
 import play.Play;
+import play.exceptions.TemplateNotFoundException;
 import play.exceptions.UnexpectedException;
 import play.libs.MimeTypes;
 import play.mvc.Http;
@@ -47,7 +48,7 @@ public class Error extends Result {
         String errorHtml = getMessage();
         try {
             errorHtml = TemplateLoader.load("errors/" + this.status + "." + (format == null ? "html" : format)).render(binding);
-        } catch (Exception e) {
+        } catch (TemplateNotFoundException e) {
             // no template in desired format, just display the default response
         }
         try {
